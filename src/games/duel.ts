@@ -96,7 +96,7 @@ export class DuelGame {
       targetX,
       targetY,
       progress: 0,
-      speed: 2.05 + Math.random() * 0.45, // reaches opponent side in ~0.45s
+      speed: 2.65 + Math.random() * 0.45, // snappy flight across center divider
       seed: Math.random() * 1000,
       radiusPx: 20,
     });
@@ -169,19 +169,19 @@ export class DuelGame {
 
       const rawSpeed = motion.getHalfSpeedScore(side);
       // Smooth power indicator for clean visual energy aura
-      this.powerSmoothed[side] += (rawSpeed - this.powerSmoothed[side]) * Math.min(1, dt * 10);
+      this.powerSmoothed[side] += (rawSpeed - this.powerSmoothed[side]) * Math.min(1, dt * 14);
 
-      if (rawSpeed > 0.12) {
-        // Faster waving charges lightning bolts proportionally faster (up to ~5 shots/sec)
-        const chargeRate = 1.2 + rawSpeed * 3.8;
+      if (rawSpeed > 0.08) {
+        // Faster waving charges lightning bolts proportionally faster
+        const chargeRate = 1.45 + rawSpeed * 4.5;
         this.charge[side] += chargeRate * dt;
       } else {
-        this.charge[side] = Math.max(0, this.charge[side] - dt * 1.1);
+        this.charge[side] = Math.max(0, this.charge[side] - dt * 1.0);
       }
 
       if (this.charge[side] >= 1.0 && this.fireCooldown[side] <= 0) {
         this.charge[side] -= 1.0;
-        this.fireCooldown[side] = 0.16;
+        this.fireCooldown[side] = 0.13;
         this.launchLightningBolt(side, motion);
       }
     });

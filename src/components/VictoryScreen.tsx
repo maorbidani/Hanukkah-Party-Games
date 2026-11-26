@@ -44,7 +44,7 @@ const SCORE_UNITS: Record<GameMode, string> = {
 const TrophySvg: React.FC = () => (
   <svg
     viewBox="0 0 180 180"
-    className="w-24 h-24 sm:w-40 sm:h-40 drop-shadow-[0_12px_32px_rgba(250,204,21,0.65)] animate-trophy-bounce"
+    className="w-14 h-14 sm:w-28 sm:h-28 drop-shadow-[0_12px_32px_rgba(250,204,21,0.65)] animate-trophy-bounce"
     aria-hidden="true"
   >
     <defs>
@@ -91,8 +91,10 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
   onBackToMenu,
 }) => {
   const fireworksCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const leavingViaActionRef = useRef<boolean>(false);
 
   useEffect(() => {
+    leavingViaActionRef.current = false;
     soundEngine.playVictoryMusic();
     const timer = window.setTimeout(() => {
       void soundEngine.speakHebrew('כל הכבוד לאלופים! איזה משחק מטורף!', {
@@ -104,7 +106,9 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
 
     return () => {
       window.clearTimeout(timer);
-      soundEngine.stopSpeech();
+      if (!leavingViaActionRef.current) {
+        soundEngine.stopSpeech();
+      }
     };
   }, []);
 
@@ -236,85 +240,89 @@ export const VictoryScreen: React.FC<VictoryScreenProps> = ({
       : 'תיקו חגיגי! שניכם אלופים!';
 
   return (
-    <div className="fixed inset-0 z-30 flex flex-col justify-between overflow-y-auto bg-slate-950/75 backdrop-blur-sm">
+    <div className="fixed inset-0 z-30 h-[100dvh] max-h-[100dvh] overflow-hidden flex flex-col justify-between bg-slate-950/75 backdrop-blur-sm">
       <canvas
         ref={fireworksCanvasRef}
+        style={{ pointerEvents: 'none' }}
         className="fixed inset-0 w-full h-full pointer-events-none z-10"
       />
 
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-0.5 bg-amber-300/35 z-10"
+        className="pointer-events-none fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-[7px] bg-gradient-to-b from-[#FFE55C] via-[#FFD700] to-[#F59E0B] shadow-[0_0_15px_rgba(255,215,0,0.9)] opacity-50 z-10"
       />
 
-      <div className="relative z-20 w-full max-w-6xl mx-auto px-4 py-4 sm:py-6 flex-1 flex flex-col items-center justify-between gap-3 sm:gap-5">
-        <div className="text-center space-y-1.5 mt-1">
-          <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-orange-400 drop-shadow-[0_4px_20px_rgba(251,191,36,0.45)]">
+      <div className="relative z-20 w-full max-w-6xl mx-auto px-3 py-3 sm:px-5 sm:py-5 flex-1 flex flex-col items-center justify-between gap-2 sm:gap-4 h-full">
+        <div className="text-center space-y-1 shrink-0">
+          <h1 className="font-display text-2xl sm:text-5xl lg:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-b from-amber-200 via-amber-400 to-orange-400 drop-shadow-[0_4px_20px_rgba(251,191,36,0.45)]">
             {headline}
           </h1>
-          <p className="text-base sm:text-xl text-sky-100 font-medium">
+          <p className="text-sm sm:text-xl text-sky-100 font-medium">
             {isKnockout
               ? 'ניצחון בנוקאאוט מוחץ בדו-קרב האלופים!'
               : `תוצאות האליפות לאחר ${result.duration} שניות`}
           </p>
         </div>
 
-        <div dir="ltr" className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 items-stretch my-auto">
+        <div dir="ltr" className="w-full grid grid-cols-2 gap-2.5 sm:gap-6 items-stretch my-auto">
           <div
             dir="rtl"
-            className={`flex flex-col items-center justify-center p-5 sm:p-7 rounded-3xl border-2 transition-all ${
+            className={`flex flex-col items-center justify-center p-3 sm:p-6 rounded-2xl sm:rounded-3xl border-2 transition-all ${
               winner === 'left' || winner === 'tie'
                 ? 'bg-gradient-to-b from-sky-900/85 to-slate-900/90 border-amber-400 shadow-[0_0_45px_rgba(250,204,21,0.35)]'
                 : 'bg-slate-900/75 border-sky-400/30 opacity-90'
             }`}
           >
             {(winner === 'left' || winner === 'tie') && <TrophySvg />}
-            <span className="text-lg sm:text-2xl font-bold text-sky-300 mt-1.5">שחקן שמאל</span>
-            <div className="font-display text-5xl sm:text-7xl font-extrabold text-white tabular-nums mt-1">
+            <span className="text-base sm:text-2xl font-bold text-sky-300 mt-1">שחקן שמאל</span>
+            <div className="font-display text-4xl sm:text-7xl font-extrabold text-white tabular-nums mt-0.5">
               {left}
             </div>
-            <span className="text-sm sm:text-lg font-semibold text-sky-200 mt-1">{unit}</span>
+            <span className="text-xs sm:text-lg font-semibold text-sky-200 mt-0.5">{unit}</span>
           </div>
 
           <div
             dir="rtl"
-            className={`flex flex-col items-center justify-center p-5 sm:p-7 rounded-3xl border-2 transition-all ${
+            className={`flex flex-col items-center justify-center p-3 sm:p-6 rounded-2xl sm:rounded-3xl border-2 transition-all ${
               winner === 'right' || winner === 'tie'
                 ? 'bg-gradient-to-b from-amber-900/80 to-slate-900/90 border-amber-400 shadow-[0_0_45px_rgba(250,204,21,0.35)]'
                 : 'bg-slate-900/75 border-amber-400/30 opacity-90'
             }`}
           >
             {(winner === 'right' || winner === 'tie') && <TrophySvg />}
-            <span className="text-lg sm:text-2xl font-bold text-amber-300 mt-1.5">שחקן ימין</span>
-            <div className="font-display text-5xl sm:text-7xl font-extrabold text-white tabular-nums mt-1">
+            <span className="text-base sm:text-2xl font-bold text-amber-300 mt-1">שחקן ימין</span>
+            <div className="font-display text-4xl sm:text-7xl font-extrabold text-white tabular-nums mt-0.5">
               {right}
             </div>
-            <span className="text-sm sm:text-lg font-semibold text-amber-200 mt-1">{unit}</span>
+            <span className="text-xs sm:text-lg font-semibold text-amber-200 mt-0.5">{unit}</span>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-4 pb-2">
+        <div className="relative z-[100] pointer-events-auto flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 pb-8 sm:pb-2 shrink-0">
           <button
             type="button"
+            style={{ position: 'relative', zIndex: 100, pointerEvents: 'auto' }}
             onClick={() => {
               leavingViaActionRef.current = true;
               soundEngine.stopSpeech();
+              soundEngine.stopBackgroundMusic();
               onBackToMenu();
             }}
-            className="flex items-center gap-2.5 px-7 py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-950 font-extrabold text-lg sm:text-xl shadow-[0_10px_28px_rgba(251,191,36,0.4)] hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
+            className="relative z-[100] pointer-events-auto flex items-center gap-2 px-5 py-3 sm:px-7 sm:py-3.5 rounded-2xl bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-950 font-extrabold text-base sm:text-xl shadow-[0_10px_28px_rgba(251,191,36,0.4)] hover:scale-[1.03] active:scale-[0.98] transition-all cursor-pointer whitespace-nowrap"
           >
             <Home className="w-5 h-5 sm:w-6 sm:h-6" />
-            <span>חזרה לתפריט הראשי</span>
+            <span>חזור למסך המשחקים</span>
           </button>
 
           <button
             type="button"
+            style={{ position: 'relative', zIndex: 100, pointerEvents: 'auto' }}
             onClick={() => {
               leavingViaActionRef.current = true;
               soundEngine.stopSpeech();
               onPlayAgain();
             }}
-            className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-slate-800/90 hover:bg-slate-700 border-2 border-white/20 text-white font-bold text-lg sm:text-xl transition-all cursor-pointer whitespace-nowrap"
+            className="relative z-[100] pointer-events-auto flex items-center gap-2 px-5 py-3 sm:px-6 sm:py-3.5 rounded-2xl bg-slate-800/95 hover:bg-slate-700 border-2 border-white/25 text-white font-bold text-base sm:text-xl transition-all cursor-pointer whitespace-nowrap"
           >
             <RotateCcw className="w-5 h-5" />
             <span>סיבוב נוסף</span>

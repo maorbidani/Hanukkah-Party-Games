@@ -43,6 +43,7 @@ export default function App() {
   const [isSplashSpeaking, setIsSplashSpeaking] = useState<boolean>(false);
   const [isIntroSpeaking, setIsIntroSpeaking] = useState<boolean>(false);
   const [result, setResult] = useState<GameResult | null>(null);
+  const [roundNonce, setRoundNonce] = useState<number>(0);
   const [cameraState, setCameraState] = useState<CameraState>({ status: 'idle' });
   const [handTrackerStatus, setHandTrackerStatus] = useState<HandTrackerState['status']>('idle');
 
@@ -72,8 +73,9 @@ export default function App() {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          width: { ideal: 960 },
+          height: { ideal: 540 },
+          frameRate: { ideal: 60, min: 30 },
         },
         audio: false,
       });
@@ -251,6 +253,7 @@ export default function App() {
         void handTrackerRef.current.initialize();
       }
       setMode(selectedMode);
+      setRoundNonce((n) => n + 1);
       setResult(null);
       setScreen('PLAYING');
     },
@@ -281,19 +284,21 @@ export default function App() {
     if (videoRef.current && videoRef.current.paused && streamRef.current) {
       videoRef.current.play().catch(() => {});
     }
+    setRoundNonce((n) => n + 1);
     setResult(null);
     setScreen('PLAYING');
   }, [mode]);
 
   const handleBackToMenu = useCallback(() => {
     soundEngine.stopSpeech();
-    soundEngine.startBackgroundMusic();
+    soundEngine.stopBackgroundMusic();
     setIsIntroSpeaking(false);
+    setResult(null);
     setScreen('MENU');
   }, []);
 
   return (
-    <div className="relative min-h-screen w-full overflow-hidden bg-[#09122C]">
+    <div className="relative h-[100dvh] max-h-[100dvh] w-full overflow-hidden bg-[#09122C]">
       {/* Festive Hanukkah Night Backdrop */}
       <div
         aria-hidden="true"
@@ -351,6 +356,7 @@ export default function App() {
 
       {screen === 'PLAYING' && (
         <GameArena
+          key={`${mode}-${roundNonce}`}
           mode={mode}
           duration={duration}
           sensitivity={sensitivity}

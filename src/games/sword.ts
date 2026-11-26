@@ -303,10 +303,10 @@ export class SwordGame {
           let delta = slashAngle - sw.angle;
           while (delta > Math.PI) delta -= Math.PI * 2;
           while (delta < -Math.PI) delta += Math.PI * 2;
-          sw.angle += delta * Math.min(1, dt * 16);
+          sw.angle += delta * Math.min(1, dt * 26);
         } else {
           const restAngle = side === 'left' ? -0.45 : 0.45;
-          sw.angle += (restAngle - sw.angle) * Math.min(1, dt * 5);
+          sw.angle += (restAngle - sw.angle) * Math.min(1, dt * 7);
         }
       } else {
         sw.activeGrace = Math.max(0, sw.activeGrace - dt);

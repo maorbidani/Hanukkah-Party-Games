@@ -112,11 +112,15 @@ export class HanukkiahGame {
       // Phase 1: Grab the glowing Shamash from the upper corner
       if (!board.shamashGrabbed) {
         const shamashPos = this.getCornerShamashPos(side);
+        const handPos = motion.getPrimaryHandPos(side);
+        const directTouch =
+          handPos !== null &&
+          Math.abs(handPos.normX - shamashPos.nx) < 0.095 &&
+          Math.abs(handPos.normY - shamashPos.ny) < 0.155;
         // 3x wide hitbox around the corner Shamash
-        const hitShamash = motion.getRegionMotion(shamashPos.nx, shamashPos.ny, 0.088, 0.145);
-        if (hitShamash > 0.08) {
+        const hitShamash = motion.getRegionMotion(shamashPos.nx, shamashPos.ny, 0.092, 0.15);
+        if (directTouch || hitShamash > 0.07) {
           board.shamashGrabbed = true;
-          const handPos = motion.getPrimaryHandPos(side);
           board.heldPos = handPos ? { nx: handPos.normX, ny: handPos.normY } : { ...shamashPos };
           soundEngine.playShamashGrab();
           this.spawnBurst(shamashPos.nx * width, shamashPos.ny * height, 22, false);
@@ -130,7 +134,7 @@ export class HanukkiahGame {
         board.heldPos = { nx: liveHand.normX, ny: liveHand.normY };
       }
 
-      // Check all 8 candles with 3x wide hitbox + continuous segment sweep collision
+      // Check all 8 candles with 3x wide hitbox + direct held-Shamash contact
       let litCount = 0;
       board.candles.forEach((candle, idx) => {
         if (candle.lit) {
@@ -139,10 +143,14 @@ export class HanukkiahGame {
         }
 
         const { nx, targetY } = this.getCandleNormPos(side, idx);
+        const directShamash =
+          board.heldPos !== null &&
+          Math.abs(board.heldPos.nx - nx) < 0.068 &&
+          Math.abs(board.heldPos.ny - targetY) < 0.155;
         // 3x wider hitbox around the general candle area
-        const motionEnergy = motion.getRegionMotion(nx, targetY, 0.068, 0.175);
+        const motionEnergy = motion.getRegionMotion(nx, targetY, 0.07, 0.175);
 
-        if (motionEnergy > 0.08) {
+        if (directShamash || motionEnergy > 0.07) {
           candle.lit = true;
           candle.litTime = now;
           litCount++;

@@ -17,6 +17,9 @@ export class MotionDetector {
   private offscreenCanvas: HTMLCanvasElement;
   private offscreenCtx: CanvasRenderingContext2D;
   private prevLuma: Float32Array | null = null;
+  private lumaBufferA: Float32Array;
+  private lumaBufferB: Float32Array;
+  private useBufferA = true;
   private motionGrid: Float32Array;
   private pointerSegments: PointerSegment[] = [];
   private lastPointerPos: { x: number; y: number; time: number } | null = null;
@@ -32,6 +35,8 @@ export class MotionDetector {
       throw new Error('Could not initialize 2D context for motion detection');
     }
     this.offscreenCtx = ctx;
+    this.lumaBufferA = new Float32Array(GRID_W * GRID_H);
+    this.lumaBufferB = new Float32Array(GRID_W * GRID_H);
     this.motionGrid = new Float32Array(GRID_W * GRID_H);
   }
 
@@ -83,12 +88,12 @@ export class MotionDetector {
   private getThreshold(): number {
     switch (this.sensitivity) {
       case 'high':
-        return 18;
+        return 12;
       case 'low':
-        return 38;
+        return 28;
       case 'medium':
       default:
-        return 26;
+        return 18;
     }
   }
 
@@ -151,7 +156,7 @@ export class MotionDetector {
    */
   public update(video: HTMLVideoElement | null, viewW: number = 16, viewH: number = 9): void {
     for (let i = 0; i < this.motionGrid.length; i++) {
-      this.motionGrid[i] *= 0.35;
+      this.motionGrid[i] *= 0.42;
     }
 
     if (video && video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
@@ -178,7 +183,8 @@ export class MotionDetector {
       this.offscreenCtx.restore();
 
       const imageData = this.offscreenCtx.getImageData(0, 0, GRID_W, GRID_H).data;
-      const currentLuma = new Float32Array(GRID_W * GRID_H);
+      const currentLuma = this.useBufferA ? this.lumaBufferA : this.lumaBufferB;
+      this.useBufferA = !this.useBufferA;
       const threshold = this.getThreshold();
 
       for (let i = 0; i < GRID_W * GRID_H; i++) {
@@ -189,7 +195,7 @@ export class MotionDetector {
         if (this.prevLuma) {
           const diff = Math.abs(luma - this.prevLuma[i]);
           if (diff > threshold) {
-            const intensity = Math.min(1, (diff - threshold) / 55);
+            const intensity = Math.min(1, (diff - threshold) / 34);
             this.motionGrid[i] = Math.max(this.motionGrid[i], intensity);
           }
         }
@@ -247,7 +253,15 @@ export class MotionDetector {
       }
     }
 
-    // 2. Continuous path sweep for pointer/mouse fallback
+    // 2. Continuous path sweep + recent direct pointer contact for pointer/mouse fallback
+    if (this.lastPointerPos && performance.now() - this.lastPointerPos.time < 140) {
+      const dx = (this.lastPointerPos.x - normX) / Math.max(0.001, normRadiusX);
+      const dy = (this.lastPointerPos.y - normY) / Math.max(0.001, normRadiusY);
+      if (dx * dx + dy * dy <= 1) {
+        return 0.95;
+      }
+    }
+
     for (const seg of this.pointerSegments) {
       if (
         this.segmentIntersectsEllipse(
@@ -272,6 +286,7 @@ export class MotionDetector {
     const maxY = Math.min(GRID_H - 1, Math.ceil((normY + normRadiusY) * GRID_H));
 
     let activeSum = 0;
+    let peakVal = 0;
     let totalCount = 0;
 
     for (let gy = minY; gy <= maxY; gy++) {
@@ -283,15 +298,16 @@ export class MotionDetector {
         if (dx * dx + dy * dy <= 1) {
           totalCount++;
           const val = this.motionGrid[gy * GRID_W + gx];
-          if (val > 0.15) {
+          if (val > 0.12) {
             activeSum += val;
+            if (val > peakVal) peakVal = val;
           }
         }
       }
     }
 
     if (totalCount === 0) return 0;
-    return activeSum / totalCount;
+    return Math.max(activeSum / totalCount, peakVal * 0.55);
   }
 
   /**

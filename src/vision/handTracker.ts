@@ -35,6 +35,8 @@ export class HandTracker {
   private prevFingers: TrackedFinger[] = [];
   private trailSparks: TrailSpark[] = [];
   private lastUpdateMs: number = 0;
+  private lastSuccessDetectMs: number = 0;
+  private nextDetectAllowedMs: number = 0;
 
   public getStatus(): HandTrackerState['status'] {
     return this.status;
@@ -60,9 +62,9 @@ export class HandTracker {
             },
             runningMode: 'VIDEO',
             numHands: 4,
-            minHandDetectionConfidence: 0.4,
-            minHandPresenceConfidence: 0.4,
-            minTrackingConfidence: 0.4,
+            minHandDetectionConfidence: 0.3,
+            minHandPresenceConfidence: 0.3,
+            minTrackingConfidence: 0.3,
           });
         } catch {
           this.landmarker = await HandLandmarker.createFromOptions(vision, {
@@ -72,9 +74,9 @@ export class HandTracker {
             },
             runningMode: 'VIDEO',
             numHands: 4,
-            minHandDetectionConfidence: 0.4,
-            minHandPresenceConfidence: 0.4,
-            minTrackingConfidence: 0.4,
+            minHandDetectionConfidence: 0.3,
+            minHandPresenceConfidence: 0.3,
+            minTrackingConfidence: 0.3,
           });
         }
         this.status = 'ready';
@@ -153,24 +155,59 @@ export class HandTracker {
     }
 
     if (video.currentTime === this.lastVideoTime) {
-      // Keep prevNormX/prevNormY synced when frame hasn't advanced so we don't repeat stale sweeps
+      // Gently predict/sync prevNormX while waiting for next camera frame
       for (const f of this.fingers) {
         f.prevNormX = f.normX;
         f.prevNormY = f.normY;
       }
       return;
     }
+
+    // Adaptive CPU/GPU pacing: if previous MediaPipe call was heavy (>18ms), skip one frame and coast smoothly
+    if (now < this.nextDetectAllowedMs) {
+      for (const f of this.fingers) {
+        f.prevNormX = f.normX;
+        f.prevNormY = f.normY;
+        f.normX = Math.max(0.02, Math.min(0.98, f.normX + f.vx * dt * 0.45));
+        f.normY = Math.max(0.02, Math.min(0.98, f.normY + f.vy * dt * 0.45));
+      }
+      return;
+    }
+
     this.lastVideoTime = video.currentTime;
 
+    const t0 = performance.now();
     let result;
     try {
       result = this.landmarker.detectForVideo(video, now);
     } catch {
       return;
     }
+    const inferMs = performance.now() - t0;
+    // On fast devices (<18ms), run at full video rate; on slower CPUs, pace gently to protect 60fps rendering
+    this.nextDetectAllowedMs = inferMs > 18 ? now + Math.min(40, inferMs * 1.15) : 0;
 
     const detected: TrackedFinger[] = [];
     const hands = result.landmarks ?? [];
+
+    if (hands.length === 0) {
+      // Brief 140ms hold so a single motion-blurred frame doesn't freeze or snap controls
+      if (now - this.lastSuccessDetectMs < 140 && this.fingers.length > 0) {
+        for (const f of this.fingers) {
+          f.prevNormX = f.normX;
+          f.prevNormY = f.normY;
+          f.vx *= 0.7;
+          f.vy *= 0.7;
+          f.speed = Math.hypot(f.vx, f.vy);
+        }
+      } else {
+        this.fingers = [];
+        this.prevFingers = [];
+      }
+      return;
+    }
+
+    this.lastSuccessDetectMs = now;
 
     for (let i = 0; i < hands.length; i++) {
       const landmarks = hands[i];
@@ -219,20 +256,22 @@ export class HandTracker {
         side,
       });
 
-      // Emit magic fireball/spark trail particles from palm center
-      const px = normX * viewW;
-      const py = normY * viewH;
-      const sparkCount = speed > 0.25 ? 3 : 1;
-      for (let s = 0; s < sparkCount; s++) {
-        this.trailSparks.push({
-          x: px + (Math.random() - 0.5) * 12,
-          y: py + (Math.random() - 0.5) * 12,
-          vx: (Math.random() - 0.5) * 50,
-          vy: -25 - Math.random() * 50,
-          alpha: 0.9,
-          size: 3 + Math.random() * 4,
-          color: side === 'left' ? (s % 2 === 0 ? '#38BDF8' : '#FEF08A') : s % 2 === 0 ? '#FB923C' : '#FEF08A',
-        });
+      // Emit magic fireball/spark trail particles from palm center (capped for 60fps)
+      if (this.trailSparks.length < 45) {
+        const px = normX * viewW;
+        const py = normY * viewH;
+        const sparkCount = speed > 0.25 ? 2 : 1;
+        for (let s = 0; s < sparkCount; s++) {
+          this.trailSparks.push({
+            x: px + (Math.random() - 0.5) * 12,
+            y: py + (Math.random() - 0.5) * 12,
+            vx: (Math.random() - 0.5) * 50,
+            vy: -25 - Math.random() * 50,
+            alpha: 0.9,
+            size: 3 + Math.random() * 4,
+            color: side === 'left' ? (s % 2 === 0 ? '#38BDF8' : '#FEF08A') : s % 2 === 0 ? '#FB923C' : '#FEF08A',
+          });
+        }
       }
     }
 

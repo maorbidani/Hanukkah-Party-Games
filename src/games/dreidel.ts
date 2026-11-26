@@ -66,9 +66,9 @@ export class DreidelGame {
       const halfEnergy = motion.getHalfMotion(side);
 
       // Motion accelerates the dreidel; lack of motion lets friction slow it down smoothly
-      if (halfEnergy > 0.012) {
-        const boost = Math.min(48, halfEnergy * 420);
-        d.angularVelocity = Math.min(44, d.angularVelocity + boost * dt * 2.6);
+      if (halfEnergy > 0.008) {
+        const boost = Math.min(54, halfEnergy * 500);
+        d.angularVelocity = Math.min(48, d.angularVelocity + boost * dt * 3.1);
       }
 
       // Gradual deceleration when no motion

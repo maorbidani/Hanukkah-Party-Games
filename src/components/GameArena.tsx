@@ -338,14 +338,15 @@ export const GameArena: React.FC<GameArenaProps> = ({
   return (
     <div
       dir="ltr"
-      className="fixed inset-0 z-20 overflow-hidden select-none touch-none"
-      onPointerMove={(e) => handlePointerInput(e.clientX, e.clientY, 0.85)}
+      className="fixed inset-0 z-20 h-[100dvh] max-h-[100dvh] overflow-hidden select-none touch-none"
+      onPointerMove={(e) => handlePointerInput(e.clientX, e.clientY, 0.9)}
       onPointerDown={(e) => handlePointerInput(e.clientX, e.clientY, 1.0)}
     >
-      {/* Glowing vertical center divider separating Left and Right players */}
+      {/* Thick, bright glowing gold vertical center divider separating Left and Right players */}
       <div
         aria-hidden="true"
-        className="pointer-events-none fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-amber-300 via-sky-300 to-amber-400 shadow-[0_0_22px_rgba(251,191,36,0.85)] z-20"
+        style={{ boxShadow: '0 0 15px rgba(255, 215, 0, 0.9)' }}
+        className="pointer-events-none fixed top-0 bottom-0 left-1/2 -translate-x-1/2 w-[7px] bg-gradient-to-b from-[#FFE55C] via-[#FFD700] to-[#F59E0B] z-20"
       />
 
       {/* Interactive 2D Game Canvas */}
@@ -386,32 +387,32 @@ export const GameArena: React.FC<GameArenaProps> = ({
         </div>
       )}
 
-      {/* Top Shared HUD */}
-      <div className="fixed top-0 inset-x-0 z-30 pointer-events-none px-2 py-2 sm:px-6 sm:py-4 flex items-start justify-between gap-1.5 sm:gap-2">
+      {/* Top Shared HUD pinned at top: 8px, ~35% smaller, semi-transparent rgba(0,0,0,0.45) */}
+      <div className="fixed top-[8px] inset-x-0 z-30 pointer-events-none px-2 sm:px-4 flex items-start justify-between gap-1.5 sm:gap-2">
         {/* Left Player Score / Health Bar */}
         {mode === 'duel' ? (
           <div
             dir="rtl"
-            className={`flex flex-col items-stretch bg-slate-950/85 backdrop-blur-md border-2 rounded-2xl px-2 py-1.5 sm:px-5 sm:py-3 shadow-xl min-w-0 flex-1 max-w-[116px] sm:max-w-[270px] md:max-w-[320px] ${
+            className={`flex flex-col items-stretch bg-[rgba(0,0,0,0.45)] backdrop-blur-sm border rounded-xl px-2 py-1 sm:px-3 sm:py-1.5 shadow-lg min-w-0 flex-1 max-w-[104px] sm:max-w-[190px] md:max-w-[215px] ${
               scores.left <= 25
-                ? 'border-rose-400 shadow-[0_0_24px_rgba(244,63,94,0.45)] animate-pulse'
-                : 'border-sky-400/75 shadow-[0_8px_24px_rgba(14,165,233,0.3)]'
+                ? 'border-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.45)] animate-pulse'
+                : 'border-sky-400/75'
             }`}
           >
-            <div className="flex items-center justify-between gap-1.5 sm:gap-3 mb-1 sm:mb-1.5">
-              <span className="text-[11px] sm:text-sm font-extrabold text-sky-300 truncate">שחקן שמאל</span>
-              <span className="font-display text-lg sm:text-4xl font-extrabold text-white tabular-nums leading-none">
+            <div className="flex items-center justify-between gap-1 sm:gap-2 mb-0.5 sm:mb-1">
+              <span className="text-[10px] sm:text-xs font-extrabold text-sky-300 truncate">שחקן שמאל</span>
+              <span className="font-display text-base sm:text-2xl font-extrabold text-white tabular-nums leading-none">
                 {scores.left}%
               </span>
             </div>
-            <div className="w-full h-3.5 sm:h-6 rounded-full bg-slate-900 border border-white/20 overflow-hidden p-0.5">
+            <div className="w-full h-2.5 sm:h-4 rounded-full bg-slate-900/70 border border-white/20 overflow-hidden p-0.5">
               <div
                 className={`h-full rounded-full transition-all duration-150 ${
                   scores.left > 55
-                    ? 'bg-gradient-to-l from-emerald-400 to-green-500 shadow-[0_0_12px_rgba(34,197,94,0.7)]'
+                    ? 'bg-gradient-to-l from-emerald-400 to-green-500 shadow-[0_0_10px_rgba(34,197,94,0.7)]'
                     : scores.left > 25
-                    ? 'bg-gradient-to-l from-amber-300 to-yellow-500 shadow-[0_0_12px_rgba(250,204,21,0.7)]'
-                    : 'bg-gradient-to-l from-rose-500 to-red-600 shadow-[0_0_14px_rgba(239,68,68,0.85)]'
+                    ? 'bg-gradient-to-l from-amber-300 to-yellow-500 shadow-[0_0_10px_rgba(250,204,21,0.7)]'
+                    : 'bg-gradient-to-l from-rose-500 to-red-600 shadow-[0_0_12px_rgba(239,68,68,0.85)]'
                 }`}
                 style={{ width: `${Math.max(0, Math.min(100, scores.left))}%` }}
               />
@@ -420,44 +421,44 @@ export const GameArena: React.FC<GameArenaProps> = ({
         ) : (
           <div
             dir="rtl"
-            className="flex flex-col items-center bg-sky-950/80 backdrop-blur-md border-2 border-sky-400/65 rounded-2xl px-2.5 py-1.5 sm:px-6 sm:py-3 shadow-[0_8px_24px_rgba(14,165,233,0.3)] min-w-[84px] sm:min-w-[175px]"
+            className="flex flex-col items-center bg-[rgba(0,0,0,0.45)] backdrop-blur-sm border border-sky-400/65 rounded-xl px-2 py-1 sm:px-3.5 sm:py-1.5 shadow-lg min-w-[66px] sm:min-w-[114px]"
           >
-            <span className="text-[11px] sm:text-sm font-bold text-sky-300">שחקן שמאל</span>
-            <div className="flex items-baseline gap-1 sm:gap-2">
-              <span className="font-display text-2xl sm:text-5xl font-extrabold text-white tabular-nums">
+            <span className="text-[10px] sm:text-xs font-bold text-sky-300 leading-tight">שחקן שמאל</span>
+            <div className="flex items-baseline gap-1 sm:gap-1.5">
+              <span className="font-display text-xl sm:text-3xl font-extrabold text-white tabular-nums leading-tight">
                 {scores.left}
               </span>
-              <span className="text-[10px] sm:text-sm font-semibold text-sky-200">{SCORE_UNITS[mode]}</span>
+              <span className="text-[9px] sm:text-[11px] font-semibold text-sky-200">{SCORE_UNITS[mode]}</span>
             </div>
           </div>
         )}
 
-        {/* Top Center Countdown Timer & Prominent Camera/Menu Controls */}
-        <div className="flex flex-col items-center gap-1.5 sm:gap-2 pointer-events-auto shrink-0">
+        {/* Top Center Countdown Timer & Compact Controls */}
+        <div className="flex flex-col items-center gap-1 pointer-events-auto shrink-0">
           <div
             dir="rtl"
-            className={`flex flex-col items-center px-3 py-1.5 sm:px-8 sm:py-2.5 rounded-2xl backdrop-blur-md border-2 shadow-xl transition-colors ${
+            className={`flex flex-col items-center px-2.5 py-1 sm:px-4 sm:py-1.5 rounded-xl backdrop-blur-sm border shadow-lg transition-colors ${
               timeLeft <= 10
-                ? 'bg-rose-950/85 border-rose-400 text-rose-100 animate-pulse'
-                : 'bg-slate-900/85 border-amber-400/70 text-amber-100'
+                ? 'bg-rose-950/75 border-rose-400 text-rose-100 animate-pulse'
+                : 'bg-[rgba(0,0,0,0.45)] border-amber-400/70 text-amber-100'
             }`}
           >
-            <span className="text-[10px] sm:text-xs font-bold text-amber-300 whitespace-nowrap max-w-[115px] sm:max-w-none truncate">
+            <span className="text-[9px] sm:text-[11px] font-bold text-amber-300 whitespace-nowrap max-w-[100px] sm:max-w-none truncate leading-tight">
               {GAME_TITLES[mode]}
             </span>
-            <span className="font-display text-2xl sm:text-5xl font-extrabold tabular-nums tracking-wider leading-none mt-0.5 sm:mt-1">
+            <span className="font-display text-xl sm:text-3xl font-extrabold tabular-nums tracking-wider leading-none mt-0.5">
               {formatTime(timeLeft)}
             </span>
           </div>
 
-          <div dir="rtl" className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+          <div dir="rtl" className="flex flex-wrap items-center justify-center gap-1 sm:gap-1.5">
             {cameraState.status !== 'active' && (
               <button
                 type="button"
                 onClick={onRequestCamera}
-                className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 py-1 sm:py-1.5 rounded-xl bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-950 text-[11px] sm:text-sm font-extrabold shadow-lg transition-all cursor-pointer whitespace-nowrap"
+                className="flex items-center gap-1 px-2 sm:px-3 py-0.5 sm:py-1 rounded-lg bg-gradient-to-r from-amber-400 to-orange-400 hover:from-amber-300 hover:to-orange-300 text-slate-950 text-[10px] sm:text-xs font-extrabold shadow-md transition-all cursor-pointer whitespace-nowrap"
               >
-                <Camera className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <Camera className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>הפעל מצלמה</span>
               </button>
             )}
@@ -465,12 +466,14 @@ export const GameArena: React.FC<GameArenaProps> = ({
             <button
               type="button"
               onClick={() => {
+                clearAllCountdownTimers();
                 soundEngine.stopSpeech();
+                soundEngine.stopBackgroundMusic();
                 onExitToMenu();
               }}
-              className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-white/15 text-[11px] sm:text-sm font-bold text-slate-200 transition-colors cursor-pointer whitespace-nowrap"
+              className="flex items-center gap-1 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-[rgba(0,0,0,0.45)] hover:bg-slate-800/80 border border-white/20 text-[10px] sm:text-xs font-bold text-slate-100 transition-colors cursor-pointer whitespace-nowrap"
             >
-              <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               <span>תפריט ראשי</span>
             </button>
 
@@ -478,9 +481,9 @@ export const GameArena: React.FC<GameArenaProps> = ({
               type="button"
               onClick={onToggleMute}
               aria-label={muted ? 'הפעל צלילים' : 'השתק צלילים'}
-              className="p-1.5 rounded-xl bg-slate-900/85 hover:bg-slate-800 border border-white/15 text-amber-200 transition-colors cursor-pointer"
+              className="p-1 rounded-lg bg-[rgba(0,0,0,0.45)] hover:bg-slate-800/80 border border-white/20 text-amber-200 transition-colors cursor-pointer"
             >
-              {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+              {muted ? <VolumeX className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
             </button>
           </div>
 
@@ -488,9 +491,9 @@ export const GameArena: React.FC<GameArenaProps> = ({
             <div
               dir="rtl"
               role="alert"
-              className="flex items-center gap-2 px-3 py-1 rounded-xl bg-rose-950/90 border border-rose-400/80 text-rose-100 text-[11px] sm:text-sm font-semibold shadow-md max-w-[240px] sm:max-w-md text-center"
+              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg bg-rose-950/85 border border-rose-400/80 text-rose-100 text-[10px] sm:text-xs font-semibold shadow-md max-w-[220px] sm:max-w-md text-center"
             >
-              <AlertTriangle className="w-4 h-4 text-rose-300 shrink-0" />
+              <AlertTriangle className="w-3.5 h-3.5 text-rose-300 shrink-0" />
               <span>
                 {cameraState.status === 'denied'
                   ? 'המצלמה חסומה בדפדפן — אשרו גישה ולחצו "הפעל מצלמה" (עכבר/מגע פעילים)'
@@ -504,26 +507,26 @@ export const GameArena: React.FC<GameArenaProps> = ({
         {mode === 'duel' ? (
           <div
             dir="rtl"
-            className={`flex flex-col items-stretch bg-slate-950/85 backdrop-blur-md border-2 rounded-2xl px-2 py-1.5 sm:px-5 sm:py-3 shadow-xl min-w-0 flex-1 max-w-[116px] sm:max-w-[270px] md:max-w-[320px] ${
+            className={`flex flex-col items-stretch bg-[rgba(0,0,0,0.45)] backdrop-blur-sm border rounded-xl px-2 py-1 sm:px-3 sm:py-1.5 shadow-lg min-w-0 flex-1 max-w-[104px] sm:max-w-[190px] md:max-w-[215px] ${
               scores.right <= 25
-                ? 'border-rose-400 shadow-[0_0_24px_rgba(244,63,94,0.45)] animate-pulse'
-                : 'border-amber-400/75 shadow-[0_8px_24px_rgba(245,158,11,0.3)]'
+                ? 'border-rose-400 shadow-[0_0_18px_rgba(244,63,94,0.45)] animate-pulse'
+                : 'border-amber-400/75'
             }`}
           >
-            <div className="flex items-center justify-between gap-1.5 sm:gap-3 mb-1 sm:mb-1.5">
-              <span className="text-[11px] sm:text-sm font-extrabold text-amber-300 truncate">שחקן ימין</span>
-              <span className="font-display text-lg sm:text-4xl font-extrabold text-white tabular-nums leading-none">
+            <div className="flex items-center justify-between gap-1 sm:gap-2 mb-0.5 sm:mb-1">
+              <span className="text-[10px] sm:text-xs font-extrabold text-amber-300 truncate">שחקן ימין</span>
+              <span className="font-display text-base sm:text-2xl font-extrabold text-white tabular-nums leading-none">
                 {scores.right}%
               </span>
             </div>
-            <div className="w-full h-3.5 sm:h-6 rounded-full bg-slate-900 border border-white/20 overflow-hidden p-0.5">
+            <div className="w-full h-2.5 sm:h-4 rounded-full bg-slate-900/70 border border-white/20 overflow-hidden p-0.5">
               <div
                 className={`h-full rounded-full transition-all duration-150 ${
                   scores.right > 55
-                    ? 'bg-gradient-to-l from-emerald-400 to-green-500 shadow-[0_0_12px_rgba(34,197,94,0.7)]'
+                    ? 'bg-gradient-to-l from-emerald-400 to-green-500 shadow-[0_0_10px_rgba(34,197,94,0.7)]'
                     : scores.right > 25
-                    ? 'bg-gradient-to-l from-amber-300 to-yellow-500 shadow-[0_0_12px_rgba(250,204,21,0.7)]'
-                    : 'bg-gradient-to-l from-rose-500 to-red-600 shadow-[0_0_14px_rgba(239,68,68,0.85)]'
+                    ? 'bg-gradient-to-l from-amber-300 to-yellow-500 shadow-[0_0_10px_rgba(250,204,21,0.7)]'
+                    : 'bg-gradient-to-l from-rose-500 to-red-600 shadow-[0_0_12px_rgba(239,68,68,0.85)]'
                 }`}
                 style={{ width: `${Math.max(0, Math.min(100, scores.right))}%` }}
               />
@@ -532,14 +535,14 @@ export const GameArena: React.FC<GameArenaProps> = ({
         ) : (
           <div
             dir="rtl"
-            className="flex flex-col items-center bg-amber-950/80 backdrop-blur-md border-2 border-amber-400/65 rounded-2xl px-2.5 py-1.5 sm:px-6 sm:py-3 shadow-[0_8px_24px_rgba(245,158,11,0.3)] min-w-[84px] sm:min-w-[175px]"
+            className="flex flex-col items-center bg-[rgba(0,0,0,0.45)] backdrop-blur-sm border border-amber-400/65 rounded-xl px-2 py-1 sm:px-3.5 sm:py-1.5 shadow-lg min-w-[66px] sm:min-w-[114px]"
           >
-            <span className="text-[11px] sm:text-sm font-bold text-amber-300">שחקן ימין</span>
-            <div className="flex items-baseline gap-1 sm:gap-2">
-              <span className="font-display text-2xl sm:text-5xl font-extrabold text-white tabular-nums">
+            <span className="text-[10px] sm:text-xs font-bold text-amber-300 leading-tight">שחקן ימין</span>
+            <div className="flex items-baseline gap-1 sm:gap-1.5">
+              <span className="font-display text-xl sm:text-3xl font-extrabold text-white tabular-nums leading-tight">
                 {scores.right}
               </span>
-              <span className="text-[10px] sm:text-sm font-semibold text-amber-200">{SCORE_UNITS[mode]}</span>
+              <span className="text-[9px] sm:text-[11px] font-semibold text-amber-200">{SCORE_UNITS[mode]}</span>
             </div>
           </div>
         )}

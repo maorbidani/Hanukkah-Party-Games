@@ -19,7 +19,7 @@ const FestiveHanukkahLogo: React.FC = () => (
     />
     <svg
       viewBox="0 0 360 220"
-      className="relative w-56 h-32 sm:w-[340px] sm:h-[200px] lg:w-[360px] lg:h-[210px] drop-shadow-[0_14px_32px_rgba(251,191,36,0.4)]"
+      className="relative w-40 h-24 sm:w-[320px] sm:h-[185px] lg:w-[350px] lg:h-[200px] drop-shadow-[0_14px_32px_rgba(251,191,36,0.4)]"
       aria-hidden="true"
     >
       <defs>
@@ -162,9 +162,9 @@ export const SplashIntro: React.FC<SplashIntroProps> = ({
   };
 
   return (
-    <div className="relative z-20 h-dvh overflow-y-auto w-full flex flex-col justify-between px-4 pt-2.5 pb-12 sm:px-8 sm:py-4 max-w-5xl mx-auto text-center">
+    <div className="relative z-20 h-[100dvh] max-h-[100dvh] overflow-hidden w-full flex flex-col justify-between px-3 pt-2 pb-10 sm:px-8 sm:py-4 max-w-5xl mx-auto text-center">
       {/* Top Camera Activation Bar if browser blocked autoplay */}
-      <div className="flex justify-center min-h-[38px] shrink-0">
+      <div className="flex justify-center min-h-[34px] shrink-0">
         {cameraState.status !== 'active' && (
           <button
             type="button"
@@ -178,26 +178,26 @@ export const SplashIntro: React.FC<SplashIntroProps> = ({
       </div>
 
       {/* Center Hero Logo & CTA */}
-      <main className="my-auto flex flex-col items-center gap-3 sm:gap-5 bg-slate-950/55 backdrop-blur-md border border-amber-300/25 rounded-3xl px-5 py-5 sm:px-10 sm:py-7 shadow-[0_20px_60px_rgba(9,18,44,0.85)]">
+      <main className="my-auto flex flex-col items-center gap-2.5 sm:gap-4 bg-slate-950/55 backdrop-blur-md border border-amber-300/25 rounded-3xl px-4 py-4 sm:px-10 sm:py-6 shadow-[0_20px_60px_rgba(9,18,44,0.85)]">
         <FestiveHanukkahLogo />
 
-        <div className="space-y-1.5 sm:space-y-2.5">
-          <h1 className="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-400 drop-shadow-[0_6px_22px_rgba(251,191,36,0.45)] text-balance">
+        <div className="space-y-1 sm:space-y-2">
+          <h1 className="font-display text-2xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-400 drop-shadow-[0_6px_22px_rgba(251,191,36,0.45)] text-balance">
             אליפות החנוכה של המשפחה!
           </h1>
-          <p className="text-sm sm:text-lg text-sky-100 font-medium max-w-2xl mx-auto leading-snug">
+          <p className="text-xs sm:text-lg text-sky-100 font-medium max-w-2xl mx-auto leading-snug line-clamp-3 sm:line-clamp-none">
             9 משחקי חנוכה אינטראקטיביים ללא מגע לשני שחקנים מול המצלמה — סופגניות, חנוכיות, סביבונים, מגן המכבים, שודדי המטבעות, מלחמת אבקת סוכר, זיכרון אורות, חרב המכבים ודו-קרב האלופים!
           </p>
         </div>
 
-        <div className="flex flex-col items-center gap-2.5 mt-1 w-full">
+        <div className="flex flex-col items-center gap-2 mt-0.5 w-full">
           <button
             type="button"
             onClick={onStartParty}
             disabled={isStartingParty}
-            className="flex items-center justify-center gap-2.5 px-6 py-3.5 sm:px-10 sm:py-5 rounded-3xl bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 hover:from-amber-300 hover:via-orange-300 hover:to-rose-400 text-slate-950 font-display font-extrabold text-xl sm:text-3xl shadow-[0_0_40px_rgba(251,191,36,0.65)] animate-pulse hover:animate-none hover:scale-[1.04] active:scale-[0.98] transition-all cursor-pointer disabled:cursor-default disabled:hover:scale-100 border-2 border-amber-100"
+            className="flex items-center justify-center gap-2 px-5 py-3 sm:px-10 sm:py-4 rounded-3xl bg-gradient-to-r from-amber-400 via-orange-400 to-rose-500 hover:from-amber-300 hover:via-orange-300 hover:to-rose-400 text-slate-950 font-display font-extrabold text-lg sm:text-3xl shadow-[0_0_40px_rgba(251,191,36,0.65)] animate-pulse hover:animate-none hover:scale-[1.04] active:scale-[0.98] transition-all cursor-pointer disabled:cursor-default disabled:hover:scale-100 border-2 border-amber-100"
           >
-            <Sparkles className="w-6 h-6 sm:w-7 sm:h-7 shrink-0" />
+            <Sparkles className="w-5 h-5 sm:w-7 sm:h-7 shrink-0" />
             <span>
               {isStartingParty
                 ? 'הקריין מברך את האלופים... 🎙️'
@@ -205,12 +205,12 @@ export const SplashIntro: React.FC<SplashIntroProps> = ({
             </span>
           </button>
 
-          <div className="flex flex-wrap items-center justify-center gap-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-2">
             <button
               type="button"
               onClick={handleTestSpeakers}
               disabled={testingAudio || isStartingParty}
-              className="px-4 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/35 border border-sky-300/40 text-sky-100 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap disabled:opacity-60"
+              className="px-3.5 py-1.5 rounded-xl bg-sky-500/20 hover:bg-sky-500/35 border border-sky-300/40 text-sky-100 text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap disabled:opacity-60"
             >
               {testingAudio ? 'משמיע: המערכת מוכנה! 🔊' : 'בדוק רמקולים 🔊'}
             </button>
@@ -218,7 +218,7 @@ export const SplashIntro: React.FC<SplashIntroProps> = ({
             <button
               type="button"
               onClick={onSkipIntro}
-              className={`px-5 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
+              className={`px-4 py-1.5 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap ${
                 isStartingParty
                   ? 'bg-slate-800 hover:bg-slate-700 border border-amber-300/60 text-amber-200 shadow-md scale-105'
                   : 'text-sky-200/80 hover:text-white hover:bg-white/10'
@@ -230,7 +230,7 @@ export const SplashIntro: React.FC<SplashIntroProps> = ({
         </div>
       </main>
 
-      <footer className="text-xs sm:text-sm text-sky-100/80 pt-1.5 shrink-0">
+      <footer className="text-[11px] sm:text-sm text-sky-100/80 pt-1 shrink-0">
         מומלץ להפעיל רמקולים כדי לשמוע את הקריין ואת מוזיקת החג!
       </footer>
     </div>

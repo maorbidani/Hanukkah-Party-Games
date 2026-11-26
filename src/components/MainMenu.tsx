@@ -141,7 +141,7 @@ export const MainMenu: React.FC<MainMenuProps> = ({
   const cameraNeedsActivation = cameraState.status !== 'active';
 
   return (
-    <div className="relative z-10 h-dvh w-full flex flex-col justify-between px-3 pt-2 pb-12 md:px-8 md:pt-3 lg:pb-3 max-w-7xl mx-auto overflow-y-auto lg:overflow-hidden">
+    <div className="relative z-10 h-[100dvh] max-h-[100dvh] w-full flex flex-col justify-between px-3 pt-2 pb-12 md:px-8 md:pt-3 lg:pb-3 max-w-7xl mx-auto overflow-y-auto lg:overflow-hidden">
       {/* Top Camera Bar & Controls */}
       <div className="space-y-1.5 shrink-0">
         <header className="flex flex-wrap items-center justify-between gap-3 bg-slate-900/80 backdrop-blur-md border border-white/15 rounded-2xl px-4 py-2 shadow-lg">
