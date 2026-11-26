@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#1E3A8A" />
+      <stop offset="55%" stop-color="#0F172A" />
+      <stop offset="100%" stop-color="#09122C" />
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FEF08A" />
+      <stop offset="50%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#B45309" />
+    </linearGradient>
+    <linearGradient id="dreidelBlue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#1D4ED8" />
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FDE047" stop-opacity="0.45" />
+      <stop offset="100%" stop-color="#FDE047" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="512" height="512" rx="96" fill="url(#bg)" />
+  <circle cx="240" cy="210" r="185" fill="url(#glow)" />
+
+  <!-- Decorative festive stars -->
+  <g fill="#FEF08A" opacity="0.9">
+    <circle cx="96" cy="112" r="6" />
+    <circle cx="418" cy="108" r="6" />
+    <circle cx="140" cy="76" r="4" />
+    <circle cx="372" cy="82" r="4.5" />
+  </g>
+
+  <!-- Glowing Hanukkiah (left-center) -->
+  <g transform="translate(216, 260)">
+    <path d="M-56 120 L56 120 L32 94 L-32 94 Z" fill="url(#gold)" />
+    <rect x="-10" y="-44" width="20" height="142" rx="6" fill="url(#gold)" />
+
+    <g fill="none" stroke="url(#gold)" stroke-width="10" stroke-linecap="round">
+      <path d="M0 54 Q-58 60 -106 -16" />
+      <path d="M0 44 Q-44 48 -78 -16" />
+      <path d="M0 32 Q-28 36 -50 -16" />
+      <path d="M0 20 Q-14 24 -24 -16" />
+      <path d="M0 20 Q14 24 24 -16" />
+      <path d="M0 32 Q28 36 50 -16" />
+      <path d="M0 44 Q44 48 78 -16" />
+      <path d="M0 54 Q58 60 106 -16" />
+    </g>
+
+    <!-- 8 candles + tall Shamash -->
+    <g>
+      <rect x="-112" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+      <rect x="-84" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+      <rect x="-56" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+      <rect x="-30" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+      <rect x="-7" y="-82" width="14" height="52" rx="3" fill="#FEF08A" />
+      <rect x="18" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+      <rect x="44" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+      <rect x="72" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+      <rect x="100" y="-56" width="12" height="42" rx="3" fill="#E0F2FE" />
+    </g>
+
+    <!-- Candle flames -->
+    <g fill="#F97316">
+      <path d="M-106 -60 Q-114 -74 -106 -90 Q-98 -74 -106 -60 Z" />
+      <path d="M-78 -60 Q-86 -74 -78 -90 Q-70 -74 -78 -60 Z" />
+      <path d="M-50 -60 Q-58 -74 -50 -90 Q-42 -74 -50 -60 Z" />
+      <path d="M-24 -60 Q-32 -74 -24 -90 Q-16 -74 -24 -60 Z" />
+      <path d="M0 -86 Q-10 -106 0 -126 Q10 -106 0 -86 Z" />
+      <path d="M24 -60 Q16 -74 24 -90 Q32 -74 24 -60 Z" />
+      <path d="M50 -60 Q42 -74 50 -90 Q58 -74 50 -60 Z" />
+      <path d="M78 -60 Q70 -74 78 -90 Q86 -74 78 -60 Z" />
+      <path d="M106 -60 Q98 -74 106 -90 Q114 -74 106 -60 Z" />
+    </g>
+    <g fill="#FEF08A">
+      <circle cx="-106" cy="-70" r="3.5" />
+      <circle cx="-78" cy="-70" r="3.5" />
+      <circle cx="-50" cy="-70" r="3.5" />
+      <circle cx="-24" cy="-70" r="3.5" />
+      <circle cx="0" cy="-100" r="5" />
+      <circle cx="24" cy="-70" r="3.5" />
+      <circle cx="50" cy="-70" r="3.5" />
+      <circle cx="78" cy="-70" r="3.5" />
+      <circle cx="106" cy="-70" r="3.5" />
+    </g>
+  </g>
+
+  <!-- Colorful Dreidel (bottom-right foreground) -->
+  <g transform="translate(384, 336) rotate(-10)">
+    <rect x="-8" y="-66" width="16" height="26" rx="5" fill="url(#gold)" />
+    <rect x="-38" y="-40" width="76" height="72" rx="12" fill="url(#dreidelBlue)" stroke="#FDE047" stroke-width="5" />
+    <polygon points="-38,32 38,32 0,72" fill="url(#gold)" />
+    <text x="0" y="10" text-anchor="middle" fill="#FFFFFF" font-size="42" font-weight="800" font-family="sans-serif">נ</text>
+  </g>
+</svg>

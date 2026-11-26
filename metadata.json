@@ -1,0 +1,6 @@
+{
+  "name": "אליפות החנוכה המשפחתית",
+  "description": "משחקי חנוכה אינטראקטיביים ללא מגע ל-2 שחקנים מול מצלמת רשת עם זיהוי תנועה בזמן אמת.",
+  "requestFramePermissions": ["camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
