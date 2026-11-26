@@ -809,7 +809,7 @@ export const GameBriefingTutorial: React.FC<GameBriefingTutorialProps> = ({
       className="fixed inset-0 z-40 h-[100dvh] max-h-[100dvh] overflow-hidden flex items-center justify-center px-3 py-2 sm:px-4 bg-slate-950/60 backdrop-blur-sm"
     >
       <div
-        className={`animate-countdown-pop max-w-2xl w-full max-h-[95dvh] overflow-hidden rounded-3xl bg-gradient-to-br ${info.gradient} border-2 border-amber-200/80 p-3.5 sm:p-6 text-center shadow-[0_24px_64px_rgba(0,0,0,0.65)] space-y-2 sm:space-y-3`}
+        className={`landscape-briefing-card animate-countdown-pop max-w-2xl w-full max-h-[95dvh] overflow-hidden rounded-3xl bg-gradient-to-br ${info.gradient} border-2 border-amber-200/80 p-3.5 sm:p-6 text-center shadow-[0_24px_64px_rgba(0,0,0,0.65)] space-y-2 sm:space-y-3`}
       >
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs sm:text-base font-extrabold text-amber-100">
@@ -842,14 +842,14 @@ export const GameBriefingTutorial: React.FC<GameBriefingTutorialProps> = ({
         <div className="flex justify-center">
           <canvas
             ref={canvasRef}
-            className="w-full max-w-[460px] max-h-[22dvh] aspect-[460/200] object-contain rounded-2xl border border-white/20 shadow-inner"
+            className="landscape-briefing-canvas w-full max-w-[460px] max-h-[22dvh] aspect-[460/200] object-contain rounded-2xl border border-white/20 shadow-inner"
           />
         </div>
 
-        <h2 className="font-display text-xl sm:text-4xl font-extrabold text-white drop-shadow">
+        <h2 className="landscape-briefing-title font-display text-xl sm:text-4xl font-extrabold text-white drop-shadow">
           {info.title}
         </h2>
-        <p className="text-xs sm:text-xl font-bold text-amber-50 leading-snug sm:leading-relaxed">
+        <p className="landscape-briefing-text text-xs sm:text-xl font-bold text-amber-50 leading-snug sm:leading-relaxed">
           {info.display}
         </p>
 

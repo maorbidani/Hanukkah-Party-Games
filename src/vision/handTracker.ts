@@ -26,6 +26,9 @@ interface TrailSpark {
 const MODEL_URL =
   'https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task';
 
+const PROC_W = 480;
+const PROC_H = 360;
+
 export class HandTracker {
   private landmarker: HandLandmarker | null = null;
   private initPromise: Promise<void> | null = null;
@@ -37,6 +40,8 @@ export class HandTracker {
   private lastUpdateMs: number = 0;
   private lastSuccessDetectMs: number = 0;
   private nextDetectAllowedMs: number = 0;
+  private procCanvas: HTMLCanvasElement | null = null;
+  private procCtx: CanvasRenderingContext2D | null = null;
 
   public getStatus(): HandTrackerState['status'] {
     return this.status;
@@ -62,9 +67,9 @@ export class HandTracker {
             },
             runningMode: 'VIDEO',
             numHands: 4,
-            minHandDetectionConfidence: 0.3,
-            minHandPresenceConfidence: 0.3,
-            minTrackingConfidence: 0.3,
+            minHandDetectionConfidence: 0.25,
+            minHandPresenceConfidence: 0.25,
+            minTrackingConfidence: 0.25,
           });
         } catch {
           this.landmarker = await HandLandmarker.createFromOptions(vision, {
@@ -74,9 +79,9 @@ export class HandTracker {
             },
             runningMode: 'VIDEO',
             numHands: 4,
-            minHandDetectionConfidence: 0.3,
-            minHandPresenceConfidence: 0.3,
-            minTrackingConfidence: 0.3,
+            minHandDetectionConfidence: 0.25,
+            minHandPresenceConfidence: 0.25,
+            minTrackingConfidence: 0.25,
           });
         }
         this.status = 'ready';
@@ -179,13 +184,27 @@ export class HandTracker {
     const t0 = performance.now();
     let result;
     try {
-      result = this.landmarker.detectForVideo(video, now);
+      // Ensure MediaPipe never processes heavier frames than 480x360 on mobile CPUs
+      let inputSource: HTMLVideoElement | HTMLCanvasElement = video;
+      if (video.videoWidth > PROC_W || video.videoHeight > PROC_H) {
+        if (!this.procCanvas && typeof document !== 'undefined') {
+          this.procCanvas = document.createElement('canvas');
+          this.procCanvas.width = PROC_W;
+          this.procCanvas.height = PROC_H;
+          this.procCtx = this.procCanvas.getContext('2d');
+        }
+        if (this.procCanvas && this.procCtx) {
+          this.procCtx.drawImage(video, 0, 0, PROC_W, PROC_H);
+          inputSource = this.procCanvas;
+        }
+      }
+      result = this.landmarker.detectForVideo(inputSource, now);
     } catch {
       return;
     }
     const inferMs = performance.now() - t0;
     // On fast devices (<18ms), run at full video rate; on slower CPUs, pace gently to protect 60fps rendering
-    this.nextDetectAllowedMs = inferMs > 18 ? now + Math.min(40, inferMs * 1.15) : 0;
+    this.nextDetectAllowedMs = inferMs > 18 ? now + Math.min(36, inferMs * 1.1) : 0;
 
     const detected: TrackedFinger[] = [];
     const hands = result.landmarks ?? [];
@@ -208,6 +227,7 @@ export class HandTracker {
     }
 
     this.lastSuccessDetectMs = now;
+    const lerpFactor = Math.min(1, Math.max(0.42, dt * 28));
 
     for (let i = 0; i < hands.length; i++) {
       const landmarks = hands[i];
@@ -215,7 +235,7 @@ export class HandTracker {
       const palmCenter = landmarks[9] || landmarks[0] || landmarks[8];
       if (!palmCenter) continue;
 
-      const { normX, normY } = this.mapToMirroredViewport(
+      const { normX: rawNormX, normY: rawNormY } = this.mapToMirroredViewport(
         palmCenter.x,
         palmCenter.y,
         video.videoWidth,
@@ -224,22 +244,24 @@ export class HandTracker {
         viewH
       );
 
-      // Match nearest previous hand to compute continuous path (prev -> curr) & velocity
-      let prevNormX = normX;
-      let prevNormY = normY;
-      let vx = 0;
-      let vy = 0;
+      // Match nearest previous hand to apply snappy Lerp smoothing & compute continuous velocity
+      let prevMatch: TrackedFinger | null = null;
       let bestDist = 0.28;
       for (const prev of this.prevFingers) {
-        const d = Math.hypot(normX - prev.normX, normY - prev.normY);
+        const d = Math.hypot(rawNormX - prev.normX, rawNormY - prev.normY);
         if (d < bestDist) {
           bestDist = d;
-          prevNormX = prev.normX;
-          prevNormY = prev.normY;
-          vx = (normX - prev.normX) / Math.max(0.016, dt);
-          vy = (normY - prev.normY) / Math.max(0.016, dt);
+          prevMatch = prev;
         }
       }
+
+      const prevNormX = prevMatch ? prevMatch.normX : rawNormX;
+      const prevNormY = prevMatch ? prevMatch.normY : rawNormY;
+      // Snappy Lerp reduces 2-meter micro-jitter while preserving immediate responsiveness
+      const normX = prevMatch ? prevNormX + (rawNormX - prevNormX) * lerpFactor : rawNormX;
+      const normY = prevMatch ? prevNormY + (rawNormY - prevNormY) * lerpFactor : rawNormY;
+      const vx = prevMatch ? (normX - prevNormX) / Math.max(0.016, dt) : 0;
+      const vy = prevMatch ? (normY - prevNormY) / Math.max(0.016, dt) : 0;
 
       const speed = Math.hypot(vx, vy);
       const side: PlayerSide = normX < 0.5 ? 'left' : 'right';
@@ -280,7 +302,8 @@ export class HandTracker {
   }
 
   /**
-   * Draws a luminous magic fireball / spark orb at each detected palm center (Landmark 9).
+   * Draws a luminous 50px+ neon ring & fireball core at each detected palm center (Landmark 9)
+   * so players standing 2 meters away can spot their exact hand cursor in ALL games.
    */
   public drawFingerOrbs(ctx: CanvasRenderingContext2D, viewW: number, viewH: number): void {
     for (const sp of this.trailSparks) {
@@ -293,55 +316,71 @@ export class HandTracker {
       ctx.restore();
     }
 
-    const pulse = 1 + Math.sin(this.lastUpdateMs * 0.012) * 0.14;
-    const baseRadius = Math.max(20, Math.min(30, viewW * 0.022));
+    const pulse = 1 + Math.sin(this.lastUpdateMs * 0.012) * 0.1;
+    // Guaranteed minimum 50px diameter neon ring (25px radius) visible from 2 meters away
+    const ringRadius = Math.max(25, Math.min(34, viewW * 0.025));
 
     for (const finger of this.fingers) {
       const x = finger.normX * viewW;
       const y = finger.normY * viewH;
       const isLeft = finger.side === 'left';
 
-      const outerColor = isLeft ? 'rgba(56, 189, 248, 0.85)' : 'rgba(249, 115, 22, 0.9)';
-      const midColor = isLeft ? 'rgba(125, 211, 252, 0.95)' : 'rgba(251, 191, 36, 0.95)';
+      const neonStroke = isLeft ? '#00F0FF' : '#FFD700';
+      const outerColor = isLeft ? 'rgba(0, 240, 255, 0.72)' : 'rgba(255, 215, 0, 0.75)';
+      const midColor = isLeft ? 'rgba(125, 211, 252, 0.95)' : 'rgba(253, 224, 71, 0.95)';
 
       ctx.save();
 
-      const aura = ctx.createRadialGradient(x, y, 2, x, y, baseRadius * 2.5 * pulse);
-      aura.addColorStop(0, '#FFFFFF');
-      aura.addColorStop(0.25, midColor);
-      aura.addColorStop(0.6, outerColor);
+      // Big luminous outer aura
+      const aura = ctx.createRadialGradient(x, y, 4, x, y, ringRadius * 2.1 * pulse);
+      aura.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+      aura.addColorStop(0.32, midColor);
+      aura.addColorStop(0.65, outerColor);
       aura.addColorStop(1, 'rgba(0, 0, 0, 0)');
       ctx.fillStyle = aura;
       ctx.beginPath();
-      ctx.arc(x, y, baseRadius * 2.5 * pulse, 0, Math.PI * 2);
+      ctx.arc(x, y, ringRadius * 2.1 * pulse, 0, Math.PI * 2);
       ctx.fill();
 
+      // Bright 50px+ Neon Ring
+      ctx.shadowColor = neonStroke;
+      ctx.shadowBlur = 18;
+      ctx.strokeStyle = neonStroke;
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.arc(x, y, ringRadius * pulse, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Crisp inner white highlight ring
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(x, y, ringRadius * 0.76 * pulse, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Rotating star crosshairs
       ctx.save();
       ctx.translate(x, y);
       ctx.rotate(this.lastUpdateMs * 0.004);
-      ctx.strokeStyle = 'rgba(254, 249, 195, 0.9)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.92)';
       ctx.lineWidth = 2.5;
       ctx.lineCap = 'round';
-      const rayLen = baseRadius * 1.3 * pulse;
+      const rayLen = ringRadius * 1.18 * pulse;
       for (let r = 0; r < 4; r++) {
         ctx.rotate(Math.PI / 2);
         ctx.beginPath();
-        ctx.moveTo(0, -rayLen * 0.35);
+        ctx.moveTo(0, -rayLen * 0.45);
         ctx.lineTo(0, -rayLen);
         ctx.stroke();
       }
       ctx.restore();
 
-      ctx.fillStyle = '#FEF9C3';
+      // Solid bright palm center dot
+      ctx.fillStyle = '#FFFFFF';
       ctx.beginPath();
-      ctx.arc(x, y, baseRadius * 0.45, 0, Math.PI * 2);
+      ctx.arc(x, y, 7, 0, Math.PI * 2);
       ctx.fill();
-
-      ctx.strokeStyle = '#FFFFFF';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(x, y, baseRadius * 0.84, 0, Math.PI * 2);
-      ctx.stroke();
 
       ctx.restore();
     }

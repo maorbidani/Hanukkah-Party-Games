@@ -19,7 +19,7 @@ const FestiveHanukkahLogo: React.FC = () => (
     />
     <svg
       viewBox="0 0 360 220"
-      className="relative w-40 h-24 sm:w-[320px] sm:h-[185px] lg:w-[350px] lg:h-[200px] drop-shadow-[0_14px_32px_rgba(251,191,36,0.4)]"
+      className="landscape-splash-logo relative w-40 h-24 sm:w-[300px] sm:h-[170px] lg:w-[350px] lg:h-[200px] drop-shadow-[0_14px_32px_rgba(251,191,36,0.4)]"
       aria-hidden="true"
     >
       <defs>
@@ -178,11 +178,11 @@ export const SplashIntro: React.FC<SplashIntroProps> = ({
       </div>
 
       {/* Center Hero Logo & CTA */}
-      <main className="my-auto flex flex-col items-center gap-2.5 sm:gap-4 bg-slate-950/55 backdrop-blur-md border border-amber-300/25 rounded-3xl px-4 py-4 sm:px-10 sm:py-6 shadow-[0_20px_60px_rgba(9,18,44,0.85)]">
+      <main className="landscape-splash-card my-auto flex flex-col items-center gap-2.5 sm:gap-4 bg-slate-950/55 backdrop-blur-md border border-amber-300/25 rounded-3xl px-4 py-4 sm:px-10 sm:py-6 shadow-[0_20px_60px_rgba(9,18,44,0.85)]">
         <FestiveHanukkahLogo />
 
         <div className="space-y-1 sm:space-y-2">
-          <h1 className="font-display text-2xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-400 drop-shadow-[0_6px_22px_rgba(251,191,36,0.45)] text-balance">
+          <h1 className="landscape-splash-title font-display text-2xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-400 to-orange-400 drop-shadow-[0_6px_22px_rgba(251,191,36,0.45)] text-balance">
             אליפות החנוכה של המשפחה!
           </h1>
           <p className="text-xs sm:text-lg text-sky-100 font-medium max-w-2xl mx-auto leading-snug line-clamp-3 sm:line-clamp-none">

@@ -73,8 +73,8 @@ export default function App() {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
           facingMode: 'user',
-          width: { ideal: 960 },
-          height: { ideal: 540 },
+          width: { ideal: 480 },
+          height: { ideal: 360 },
           frameRate: { ideal: 60, min: 30 },
         },
         audio: false,
@@ -305,25 +305,26 @@ export default function App() {
         className="fixed inset-0 pointer-events-none bg-[radial-gradient(circle_at_50%_20%,rgba(56,189,248,0.22),transparent_55%),radial-gradient(circle_at_20%_80%,rgba(245,158,11,0.16),transparent_50%),radial-gradient(circle_at_80%_80%,rgba(168,85,247,0.16),transparent_50%)]"
       />
 
-      {/* Mirrored Full-Screen Webcam Video at Clear 0.65 Opacity across all modes (including sword & duel) */}
+      {/* Mirrored Full-Screen Webcam Video at High Visibility (0.85 opacity + brightness/contrast boost for dark projector rooms) */}
       <video
         ref={videoRef}
         autoPlay
         playsInline
         muted
         aria-hidden="true"
+        style={{ filter: 'brightness(1.25) contrast(1.15)' }}
         className={`fixed inset-0 z-[1] w-full h-full object-cover scale-x-[-1] pointer-events-none transition-opacity duration-500 ${
           cameraState.status === 'active' && (screen !== 'PLAYING' || CAMERA_ACTIVE_MODES.has(mode))
-            ? 'opacity-[0.65]'
+            ? 'opacity-[0.85]'
             : 'opacity-0'
         }`}
       />
 
-      {/* Light Scrim so kids clearly see themselves at 0.65 opacity while UI stays crisp */}
+      {/* Light Scrim on menus only; clear transparent camera view during active gameplay */}
       <div
         aria-hidden="true"
         className={`fixed inset-0 z-[2] pointer-events-none transition-colors duration-300 ${
-          screen === 'PLAYING' ? 'bg-slate-950/15' : 'bg-slate-950/25'
+          screen === 'PLAYING' ? 'bg-transparent' : 'bg-slate-950/20'
         }`}
       />
 

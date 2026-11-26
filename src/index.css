@@ -69,3 +69,95 @@
   font-variant-numeric: tabular-nums;
 }
 
+@media (orientation: landscape) and (max-height: 580px) {
+  .landscape-victory-inner {
+    padding-top: 0.45rem !important;
+    padding-bottom: 0.45rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .landscape-victory-title {
+    font-size: 1.5rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .landscape-victory-subtitle {
+    font-size: 0.8rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .landscape-victory-grid {
+    gap: 0.75rem !important;
+  }
+
+  .landscape-victory-card {
+    padding: 0.55rem 0.75rem !important;
+    border-radius: 1rem !important;
+  }
+
+  .landscape-victory-trophy {
+    width: 2.5rem !important;
+    height: 2.5rem !important;
+  }
+
+  .landscape-victory-player {
+    font-size: 0.95rem !important;
+    margin-top: 0.15rem !important;
+  }
+
+  .landscape-victory-score {
+    font-size: 2.25rem !important;
+    line-height: 1 !important;
+    margin-top: 0.1rem !important;
+  }
+
+  .landscape-victory-unit {
+    font-size: 0.75rem !important;
+  }
+
+  .landscape-victory-actions {
+    padding-bottom: 0.25rem !important;
+    gap: 0.6rem !important;
+  }
+
+  .landscape-victory-btn {
+    padding: 0.5rem 1.1rem !important;
+    font-size: 0.95rem !important;
+    border-radius: 0.85rem !important;
+  }
+
+  .landscape-splash-logo {
+    width: 8.5rem !important;
+    height: 4.8rem !important;
+  }
+
+  .landscape-splash-card {
+    padding: 0.65rem 1.25rem !important;
+    gap: 0.45rem !important;
+  }
+
+  .landscape-splash-title {
+    font-size: 1.65rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .landscape-briefing-card {
+    padding: 0.65rem 1rem !important;
+    gap: 0.35rem !important;
+  }
+
+  .landscape-briefing-canvas {
+    max-height: 24dvh !important;
+  }
+
+  .landscape-briefing-title {
+    font-size: 1.45rem !important;
+    line-height: 1.15 !important;
+  }
+
+  .landscape-briefing-text {
+    font-size: 0.9rem !important;
+    line-height: 1.25 !important;
+  }
+}
+
